@@ -45,3 +45,12 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+*.sdf
+*.opensdf
+ipch/qtapp-7685fdc9/qtapp-d33a690.ipch
+*.obj
+*.log
+*.pch
+QTApp/Debug/QTApp.res
+*.tlog
+QTApp/Debug/vc120.pdb
