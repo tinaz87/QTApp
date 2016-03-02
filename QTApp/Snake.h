@@ -27,8 +27,9 @@ public:
 	};
 
 	Snake(Field* iField);
-	virtual ~Snake();
-	//Square mHead;
+	~Snake();
+	
+	void Reset();
 	void moveLeft();
 	void moveRight();
 	void moveUp();
@@ -52,6 +53,8 @@ private:
 	QVector2D mDirection;
 	std::map<QVector2D, BodyPiece*> mPiecePositions;
 
+	void freeSnakePieces();
+	void initSnake();
 
 	int mVelocity;
 	int mSupportVelocity;

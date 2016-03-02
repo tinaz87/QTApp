@@ -14,6 +14,13 @@ Player::~Player(){
 	this->mSnake = nullptr;
 
 }
+void Player::Reset(){
+	this->mLoose = false;
+	this->mWin = false;
+	this->mPoints = 0;
+
+	this->mSnake->Reset();
+}
 void Player::updateStatus(int elapsed){
 	
 	if (!this->mWin && !this->mLoose)

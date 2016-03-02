@@ -33,7 +33,7 @@ void Scene::paintEvent(QPaintEvent *event)
 	QPainter painter;
 	painter.begin(this);
 	painter.setRenderHint(QPainter::Antialiasing);
-	QBrush background = QBrush(this->mField->mColor);
+	QBrush background = QBrush(GameSettings::mFieldColor);
 	painter.fillRect(event->rect(), background);
 	painter.setFont(QFont("Arial", 16));
 	
@@ -44,8 +44,17 @@ void Scene::paintEvent(QPaintEvent *event)
 
 	painter.setPen(this->mPen);
 
+	if (GameSettings::mRestart){
+		for each (Player* pPlayer in this->mPlayers)
+		{
+			pPlayer->Reset();
+		}
+		GameSettings::mRestart = false;
+	}
+	
 	for each (Player* pPlayer in this->mPlayers)
 	{
+		
 		
 		auto pSnake = pPlayer->mSnake;
 		const auto& pSnakeBody = pSnake->getSnakeBody();
@@ -93,14 +102,14 @@ void Scene::paintEvent(QPaintEvent *event)
 		}
 
 		/* draw */
-		painter.setBrush(pSnakeHead->mColor);
+		painter.setBrush(GameSettings::mSnakeColor);
 
 		for (auto it = pSnakeBody.cbegin(); it != pSnakeBody.end(); ++it){
 			painter.drawRect((*it)->mPosition.x(), (*it)->mPosition.y(), (*it)->mWidth, (*it)->mHeight);
 
 		}
 
-		// disegno il cibo una volta sola nel caso avesdsi piu giocatori.
+		// disegno il cibo una volta sola nel caso avessi piu giocatori.
 		if (pDrawFood && this->mField->isFoodEnable()){
 
 			painter.setBrush(this->mField->mFood.mColor);

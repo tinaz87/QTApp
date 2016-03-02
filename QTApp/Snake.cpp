@@ -10,7 +10,12 @@ Square::~Square(){}
 Snake::BodyPiece::BodyPiece(): mDirection(0, 1){}
 Snake::BodyPiece::~BodyPiece(){}
 
-Snake::Snake(Field* iField) : mDirection(0, 1), mVelocity(5),mField(iField), mAlive(true),mCollidingItSelf(false){
+Snake::Snake(Field* iField) : mDirection(0, 1), mVelocity(GameSettings::mSnakeStartVelocity),mField(iField), mAlive(true),mCollidingItSelf(false),mHead(nullptr){
+	this->initSnake();
+}
+
+
+void Snake::initSnake(){
 	mHead = new BodyPiece;
 	mHead->mPosition.setX(mHead->mWidth / 2);
 	mHead->mPosition.setY(mHead->mHeight / 2);
@@ -20,12 +25,9 @@ Snake::Snake(Field* iField) : mDirection(0, 1), mVelocity(5),mField(iField), mAl
 	this->mSupportVelocity = this->mVelocity;
 	this->addPiece();
 }
+
 Snake::~Snake(){
-	for (size_t i = 0; i < this->mSnakeBody.size(); ++i){
-		delete this->mSnakeBody.at(i);
-	}
-	this->mSnakeBody.clear();
-	this->mHead = nullptr;
+	this->freeSnakePieces();
 }
 uint16_t Snake::getLength()const{
 	return this->mSnakeBody.size();
@@ -42,7 +44,6 @@ void Snake::moveLeft(){
 		
 	}
 }
-
 void Snake::moveRight(){
 	if (this->mDirection.x() == 0){
 		this->mDirection.setX(1);
@@ -99,7 +100,22 @@ void Snake::onPlayerEvent(const char iKey){
 	
 	
 }
-
+void Snake::freeSnakePieces(){
+	for (size_t i = 0; i < this->mSnakeBody.size(); ++i){
+		delete this->mSnakeBody.at(i);
+	}
+	this->mSnakeBody.resize(0);
+	this->mHead = nullptr;
+}
+void Snake::Reset(){
+	this->mVelocity = GameSettings::mSnakeStartVelocity;
+	this->mCollidingItSelf = false;
+	this->mAlive = true;
+	this->freeSnakePieces();
+	this->initSnake();
+	this->mDirection.setX(0);
+	this->mDirection.setY(1);
+}
 void Snake::addPiece(){
 	this->addPiece(Square());
 }

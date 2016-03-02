@@ -1,5 +1,5 @@
 #pragma once
-#include "Drawer.h"
+
 
 class QLabel;
 class QWidget;
@@ -17,6 +17,24 @@ public:
 	OptionWindow();
 	~OptionWindow();
 
+private:
+
+	bool mChangingColorSnake;
+	bool mChangingColorField;
+	QColorDialog* mColorDialog;
+	QPushButton* mColorSnakeButton;
+	QPushButton* mColorFieldButton;
+	QColor mBackUpColor;
+
+	void closeEvent(QCloseEvent *bar);
+private slots:
+	//void onValueChanged(int value);
+	void selectSnakeColor();
+	void selectFieldColor();
+	
+	// se iResult==1 allora ho premuto ok , 0 altrimenti
+	void onCloseColorDialog(int iResult);
+	void onColorChange(const QColor& color);
 };
 
 class Window : public QMainWindow
@@ -32,23 +50,27 @@ public:
 	QPushButton* mButtonDown;
 	QPushButton* mButtonLeft;
 	QPushButton* mButtonRight;
-	
-protected:
-	//void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
 
 private slots:
 	void OptionsWnd();
+	void GamePause();
+	void GameRestart();
 private:
 	Scene *mScene;
 	Field* mField ;
 
+	QTimer *mTimer;
+	OptionWindow* mOptionWnd;
 	QMenuBar* mMenuBar;
 	QMenu* mSettingsMenu;
 	QAction *mOptionAct;
 	QAction *mExitAct;
-
+	QWidget* mLeftWidget;
+	QVBoxLayout *mVLayout;
+	QPushButton *mButtonPause;
+	QPushButton *mButtonRestart;
 
 	void setActions();
 	void createMenu();
-
+	void closeEvent(QCloseEvent *bar);
 };

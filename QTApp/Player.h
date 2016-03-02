@@ -10,6 +10,7 @@ public:
 	~Player();
 	void updateStatus(int iElapsed);	
 	void addPoint(const uint16_t iPoint);
+	void Reset();
 	uint16_t getPoints()const;
 	
 	Snake* mSnake;

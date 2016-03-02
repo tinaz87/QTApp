@@ -47,10 +47,16 @@ Temporary Items
 .apdisk
 *.sdf
 *.opensdf
-ipch/qtapp-7685fdc9/qtapp-d33a690.ipch
+ipch/
 *.obj
 *.log
 *.pch
 QTApp/Debug/QTApp.res
 *.tlog
 QTApp/Debug/vc120.pdb
+*.res
+QTApp/x64/Debug/vc120.pdb
+x64/Debug/QTApp.exe
+*.ilk
+*.pdb
+*.suo

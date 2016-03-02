@@ -1,19 +1,95 @@
 #include <stdafx.h>
 
 
-OptionWindow::OptionWindow() :QWidget(){
+OptionWindow::OptionWindow() :QWidget(), mChangingColorField(false), mChangingColorSnake(false), mColorDialog(nullptr), mColorSnakeButton(nullptr),mColorFieldButton(nullptr){
 	//QGridLayout *layout = new QGridLayout;
 
-	this->setFixedSize(660, 600);
+	this->setFixedSize(320, 240);
 	setWindowTitle(tr("Opzioni"));
 
+
+	this->mColorDialog = new QColorDialog();
+	
+
+	QVBoxLayout *layout = new QVBoxLayout();
+	
+
+
+	this->mColorSnakeButton = new QPushButton(tr("Snake Color"));
+	connect(this->mColorSnakeButton, SIGNAL(clicked()), this, SLOT(selectSnakeColor()));
+
+	this->mColorFieldButton = new QPushButton(tr("Field Color"));
+	connect(this->mColorFieldButton, SIGNAL(clicked()), this, SLOT(selectFieldColor()));
+
+	layout->addWidget(this->mColorSnakeButton);
+	layout->addWidget(this->mColorFieldButton);
+
+
+	connect(mColorDialog, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(onColorChange(const QColor&)));
+
+	connect(mColorDialog, SIGNAL(finished(int)), this, SLOT(onCloseColorDialog(int)));
+
+	this->setLayout(layout);
+
 }
-OptionWindow::~OptionWindow(){}
+OptionWindow::~OptionWindow(){ 
+
+	disconnect(this->mColorDialog);
+	disconnect(this->mColorFieldButton);
+	disconnect(this->mColorSnakeButton);
+
+	delete this->mColorDialog; 
+	this->mColorDialog = nullptr;
+
+	delete this->mColorFieldButton;
+	this->mColorFieldButton = nullptr;
+
+	delete this->mColorSnakeButton;
+	this->mColorSnakeButton = nullptr;
+}
+void OptionWindow::closeEvent(QCloseEvent *bar){
+	GameSettings::mPause = false;
+}
+
+void OptionWindow::onColorChange(const QColor& color){
+	if (this->mChangingColorField)
+		GameSettings::mFieldColor = color;
+	else
+		GameSettings::mSnakeColor = color;
+}
+void OptionWindow::onCloseColorDialog(int iResult){
+	
+	if (!iResult){
+		if (this->mChangingColorField)
+			GameSettings::mFieldColor = this->mBackUpColor;
+		else
+			GameSettings::mSnakeColor = this->mBackUpColor;
+	}
+	this->mChangingColorField = false;
+	this->mChangingColorSnake = false;
+}
+void OptionWindow::selectFieldColor()
+{
+	this->mChangingColorField = true;
+	this->mBackUpColor = GameSettings::mFieldColor;
+	this->mColorDialog->show();
+}
+void OptionWindow::selectSnakeColor()
+{
+	this->mChangingColorSnake = true;
+	this->mBackUpColor = GameSettings::mSnakeColor;
+	this->mColorDialog->show();
+}
+
 
 Window:: ~Window(){
 	delete this->mScene;
 	delete this->mField;
 	delete this->mPlayer;
+
+	this->mScene = nullptr;
+	this->mField = nullptr;
+	this->mPlayer = nullptr;
 
 	QObject::disconnect(this->mButtonRight);
 	QObject::disconnect(this->mButtonLeft);
@@ -25,17 +101,53 @@ Window:: ~Window(){
 	delete this->mButtonUp;
 	delete this->mButtonDown;
 
+	this->mButtonRight = nullptr;
+	this->mButtonLeft = nullptr;
+	this->mButtonUp = nullptr;
+	this->mButtonDown = nullptr;
+
+	delete this->mTimer;
+	this->mTimer = nullptr;
+
+
+	if (this->mOptionWnd){
+		delete this->mOptionWnd;
+		this->mOptionWnd = nullptr;
+	}
+	
+	delete this->mOptionAct;
+	this->mOptionAct;
+
+	delete this->mExitAct;
+	this->mExitAct;
+
+	delete this->mButtonPause;
+	this->mButtonPause = nullptr;
+
+	delete this->mButtonRestart;
+	this->mButtonRestart = nullptr;
+
+	//delete this->mVLayout;
+
+	delete this->mLeftWidget;
+	this->mLeftWidget = nullptr;
+
+	
 }
 
 
-Window::Window():QMainWindow()
+Window::Window() :QMainWindow(), mOptionWnd(nullptr), mScene(nullptr), mField(nullptr), 
+mPlayer(nullptr), mButtonDown(nullptr), mButtonLeft(nullptr), mButtonRight(nullptr), mButtonUp(nullptr), mTimer(nullptr)
 {
-	this->setFixedSize(660,600);
+	this->setFixedSize(760,600);
 	this->mScene = new Scene( this);
 	this->mField = new Field(640, 480);
 	this->mPlayer = new Player(this->mField, "Player 1");
 	this->mScene->addPlayer(this->mPlayer);
 	this->mScene->setField(this->mField);
+
+	this->setFocusPolicy(Qt::StrongFocus);
+	this->setAttribute(Qt::WA_QuitOnClose, true);
 
 	QGridLayout *layout = new QGridLayout;
 
@@ -54,33 +166,25 @@ Window::Window():QMainWindow()
 	this->mButtonRight = b2;
 	this->mButtonLeft = b1;
 
-	//QSlider* pRedSlider = new QSlider(Qt::Horizontal,this);
-	//QSlider* pGreenSlider = new QSlider(Qt::Horizontal, this);
-	//QSlider* pBlueSlider = new QSlider(Qt::Horizontal, this);
-
-
-	//pRedSlider->setFocusPolicy(Qt::StrongFocus);
-	//pRedSlider->setTickPosition(QSlider::TicksBothSides);
-	//pRedSlider->setTickInterval(255);
-	//pRedSlider->setSingleStep(1);
 
 	QObject::connect(b1, &QPushButton::clicked,  [b1,this](const bool checked) {
 		
+		this->setFocus();
 		this->mPlayer->onKeyPressed('A');
 		
 	});
 	QObject::connect(b2, &QPushButton::clicked, [b2, this](const bool checked) {
+		this->setFocus();
 		this->mPlayer->onKeyPressed('D');
 	});
 	QObject::connect(b3, &QPushButton::clicked, [b3, this](const bool checked) {
+		this->setFocus();
 		this->mPlayer->onKeyPressed('W');
 	});
 	QObject::connect(b4, &QPushButton::clicked, [b4, this](const bool checked) {
+		this->setFocus();
 		this->mPlayer->onKeyPressed('S');
 	});
-	/*QObject::connect(b5, &QPushButton::clicked, [b4, this](const bool checked) {
-		this->mPlayer->onKeyPressed('A');
-	});*/
 	
 	layout->addWidget(b3, 3, 2);
 	layout->addWidget(b1, 4, 1);
@@ -120,22 +224,59 @@ Window::Window():QMainWindow()
 	mainLayout->addLayout(vLayout);
 	
 	*/
-	this->setCentralWidget(centralWidget);
-	centralWidget->setLayout(layout);
+	this->mLeftWidget = new QWidget();
+	this->mVLayout = new QVBoxLayout(mLeftWidget);
+	this->mButtonPause = new QPushButton("Pause");
+	this->mButtonRestart = new QPushButton("Restart");
+	
+	
+	connect(this->mButtonPause, SIGNAL(clicked()), this, SLOT(GamePause()));
 
-	QTimer *timer = new QTimer(this);
+	connect(this->mButtonRestart, SIGNAL(clicked()), this, SLOT(GameRestart()));
+	/*
+	vLayout->setContentsMargins(-1, -1, -1, -1);
+	vLayout->setSpacing(0);
+	vLayout->setMargin(0);
+*/	
+
+	this->mLeftWidget->setFixedSize(100, 80);
+	this->mVLayout->addWidget(this->mButtonPause);
+	this->mVLayout->addWidget(this->mButtonRestart);
+
+	this->setCentralWidget(centralWidget);
+	
+
+	layout->addWidget(mLeftWidget, 1, 4);
+	centralWidget->setLayout(layout);
+	this->mTimer = new QTimer(this);
 	//connect(timer, SIGNAL(timeout()), native, SLOT(animate()));
-	connect(timer, SIGNAL(timeout()), this->mScene, SLOT(animate()));
-	timer->start(50);
+	connect(this->mTimer, SIGNAL(timeout()), this->mScene, SLOT(animate()));
+	this->mTimer->start(10);
 
 	setWindowTitle(tr("SNAKE"));
 }
+void Window::closeEvent(QCloseEvent *bar){
+	if (this->mOptionWnd){
+		this->mOptionWnd->close();
+		
+	}
+}
 
+void Window::GameRestart(){
+	GameSettings::mRestart = true;
+}
+void Window::GamePause(){
+	GameSettings::mPause = !GameSettings::mPause;
+	this->mButtonPause->setText(GameSettings::mPause ? "Resume" : "Pause");
+}
 void Window::OptionsWnd()
 {
 
-	OptionWindow* pOptionWnd = new OptionWindow();
-	pOptionWnd->show();
+	if (!this->mOptionWnd){
+		this->mOptionWnd = new OptionWindow();
+	}
+	GameSettings::mPause = true;
+	this->mOptionWnd->show();
 
 }
 
