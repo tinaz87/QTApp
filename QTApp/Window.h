@@ -28,7 +28,7 @@ private:
 
 	void closeEvent(QCloseEvent *bar);
 private slots:
-	//void onValueChanged(int value);
+	
 	void selectSnakeColor();
 	void selectFieldColor();
 	

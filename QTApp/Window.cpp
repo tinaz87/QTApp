@@ -127,8 +127,7 @@ Window:: ~Window(){
 	delete this->mButtonRestart;
 	this->mButtonRestart = nullptr;
 
-	//delete this->mVLayout;
-
+	
 	delete this->mLeftWidget;
 	this->mLeftWidget = nullptr;
 
@@ -196,34 +195,9 @@ mPlayer(nullptr), mButtonDown(nullptr), mButtonLeft(nullptr), mButtonRight(nullp
 	this->createMenu();
 
 
-	//layout->addWidget(centralWidget, 0, 1, 1, 3);
+	
 	layout->addWidget(this->mScene, 1, 1, 1, 3);
-	//layout->addWidget(pRedSlider, 1, 4);
-	//layout->addWidget(pGreenSlider, 2, 4);
-	//layout->addWidget(pBlueSlider, 3, 4);
-	//layout->addWidget(b5, 2, 3);
-	/*
-	hLayout->addWidget(b1);
-	hLayout->addWidget(b2);
-	hLayout->addWidget(b3);
 
-	// Vertical layout with 3 buttons
-	QVBoxLayout *vLayout = new QVBoxLayout;
-	QPushButton *b4 = new QPushButton("D");
-	QPushButton *b5 = new QPushButton("E");
-	QPushButton *b6 = new QPushButton("F");
-	vLayout->addWidget(b4);
-	vLayout->addWidget(b5);
-	vLayout->addWidget(b6);
-	
-	// Outer Layer
-	QVBoxLayout *mainLayout = new QVBoxLayout;
-
-	// Add the previous two inner layouts
-	mainLayout->addLayout(hLayout);
-	mainLayout->addLayout(vLayout);
-	
-	*/
 	this->mLeftWidget = new QWidget();
 	this->mVLayout = new QVBoxLayout(mLeftWidget);
 	this->mButtonPause = new QPushButton("Pause");
@@ -233,11 +207,7 @@ mPlayer(nullptr), mButtonDown(nullptr), mButtonLeft(nullptr), mButtonRight(nullp
 	connect(this->mButtonPause, SIGNAL(clicked()), this, SLOT(GamePause()));
 
 	connect(this->mButtonRestart, SIGNAL(clicked()), this, SLOT(GameRestart()));
-	/*
-	vLayout->setContentsMargins(-1, -1, -1, -1);
-	vLayout->setSpacing(0);
-	vLayout->setMargin(0);
-*/	
+
 
 	this->mLeftWidget->setFixedSize(100, 80);
 	this->mVLayout->addWidget(this->mButtonPause);
@@ -249,7 +219,7 @@ mPlayer(nullptr), mButtonDown(nullptr), mButtonLeft(nullptr), mButtonRight(nullp
 	layout->addWidget(mLeftWidget, 1, 4);
 	centralWidget->setLayout(layout);
 	this->mTimer = new QTimer(this);
-	//connect(timer, SIGNAL(timeout()), native, SLOT(animate()));
+	
 	connect(this->mTimer, SIGNAL(timeout()), this->mScene, SLOT(animate()));
 	this->mTimer->start(10);
 
@@ -330,9 +300,4 @@ void Window::keyPressEvent(QKeyEvent* e)
 	}
 	this->mPlayer->onKeyPressed(pkey);
 	
-	/*
-	QMessageBox* box = new QMessageBox();
-	box->setWindowTitle(QString("Hello"));
-	box->setText(QString("You Pressed: ") + e->text());
-	box->show();*/
 };
